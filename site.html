@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Site Request - LEAP Wetland Monitoring</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+    .header { background: #52a676; color: white; padding: 20px; }
+    .header h1 { margin: 0; font-size: 1.5rem; }
+    .content { padding: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
+    }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #52a676; box-shadow: 0 0 0 2px rgba(82,166,118,0.2); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group .hint { font-size: 12px; color: #888; margin-top: 4px; }
+    .gps-row { display: flex; gap: 15px; }
+    .gps-row .form-group { flex: 1; }
+    .attachments { background: #f0fdf4; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .attachments h3 { margin: 0 0 10px 0; color: #52a676; }
+    .attachments img { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .attachment-item { margin-bottom: 15px; }
+    .attachment-item p { margin: 0 0 5px 0; font-weight: 600; font-size: 14px; }
+    .btn { display: inline-block; padding: 14px 28px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; color: white; }
+    .btn-approve { background: #52a676; flex: 1; }
+    .btn-approve:hover { background: #3d8a5e; }
+    .btn-reject { background: #ef4444; }
+    .btn-reject:hover { background: #dc2626; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 15px; margin-top: 30px; }
+    .info-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; margin-bottom: 20px; border-radius: 0 8px 8px 0; font-size: 14px; }
+    .loading { text-align: center; padding: 60px 20px; }
+    .loading .spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: #52a676; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px; border-radius: 0 8px 8px 0; color: #991b1b; }
+    .success-box { background: #f0fdf4; border-left: 4px solid #52a676; padding: 15px; margin: 20px; border-radius: 0 8px 8px 0; color: #166534; }
+    .changes-list { background: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; }
+    .changes-list ul { margin: 10px 0; padding-left: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Review and Edit Site Request</h1>
+    </div>
+
+    <!-- Loading state -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading site request data...</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="error" style="display:none;">
+      <div class="error-box">
+        <strong>Error:</strong> <span id="error-message"></span>
+      </div>
+    </div>
+
+    <!-- Success state -->
+    <div id="success" style="display:none;">
+      <div class="success-box">
+        <strong id="success-message"></strong>
+      </div>
+      <div id="changes-container"></div>
+    </div>
+
+    <!-- Edit form -->
+    <div id="edit-form" class="content" style="display:none;">
+      <div class="info-box">
+        <strong>Submitted by:</strong> <span id="submitted-by"></span><br>
+        <strong>Submitted on:</strong> <span id="submitted-date"></span><br>
+        <strong>Request ID:</strong> <span id="request-id"></span>
+      </div>
+
+      <form id="site-form">
+        <div class="form-group">
+          <label>Site Name *</label>
+          <input type="text" id="site_name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="site_description"></textarea>
+        </div>
+
+        <div class="gps-row">
+          <div class="form-group">
+            <label>GPS Latitude</label>
+            <input type="number" step="any" id="gps_latitude" placeholder="-4.1234">
+          </div>
+          <div class="form-group">
+            <label>GPS Longitude</label>
+            <input type="number" step="any" id="gps_longitude" placeholder="55.5678">
+          </div>
+        </div>
+
+        <div class="attachments">
+          <h3>Attachments</h3>
+          <div id="attachments-container"></div>
+          <div class="hint">Photos and maps cannot be modified here. To change them, approve the request and modify in the app directly.</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn btn-approve" id="approve-btn">Approve with Changes</button>
+          <button type="button" class="btn btn-reject" id="reject-btn">Reject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var SUPABASE_URL = 'https://gftrszttkztlqwwoqrzy.supabase.co';
+    var EDGE_FUNCTION_URL = SUPABASE_URL + '/functions/v1/approve-site-request';
+
+    var params = new URLSearchParams(window.location.search);
+    var requestId = params.get('id');
+    var token = params.get('token');
+
+    var requestData = null;
+    var originalData = {};
+
+    async function init() {
+      if (!requestId || !token) {
+        showError('Missing required parameters (id and token).');
+        return;
+      }
+
+      try {
+        var response = await fetch(
+          EDGE_FUNCTION_URL + '?id=' + encodeURIComponent(requestId) + '&action=fetch&token=' + encodeURIComponent(token)
+        );
+
+        if (!response.ok) {
+          var text = await response.text();
+          try {
+            var json = JSON.parse(text);
+            throw new Error(json.error || json.message || text);
+          } catch (e) {
+            if (e.message && e.message !== text) throw e;
+            throw new Error(text || 'Failed to load request data');
+          }
+        }
+
+        requestData = await response.json();
+
+        // Store originals for change tracking
+        originalData = {
+          site_name: requestData.site_name || '',
+          site_description: requestData.site_description || '',
+          gps_latitude: requestData.gps_latitude || '',
+          gps_longitude: requestData.gps_longitude || ''
+        };
+
+        // Populate form
+        document.getElementById('submitted-by').textContent = requestData.user_email || 'Unknown';
+        document.getElementById('submitted-date').textContent = requestData.request_date
+          ? new Date(requestData.request_date).toLocaleDateString()
+          : 'Unknown';
+        document.getElementById('request-id').textContent = requestId;
+        document.getElementById('site_name').value = requestData.site_name || '';
+        document.getElementById('site_description').value = requestData.site_description || '';
+        document.getElementById('gps_latitude').value = requestData.gps_latitude || '';
+        document.getElementById('gps_longitude').value = requestData.gps_longitude || '';
+
+        // Populate attachments
+        var attachContainer = document.getElementById('attachments-container');
+        var hasAttachments = false;
+
+        if (requestData.site_photo) {
+          hasAttachments = true;
+          var photoDiv = document.createElement('div');
+          photoDiv.className = 'attachment-item';
+          photoDiv.innerHTML = '<p>Site Photo:</p><img src="' + requestData.site_photo + '" alt="Site Photo">';
+          attachContainer.appendChild(photoDiv);
+        }
+
+        if (requestData.site_map) {
+          hasAttachments = true;
+          var mapDiv = document.createElement('div');
+          mapDiv.className = 'attachment-item';
+          mapDiv.innerHTML = '<p>Site Map:</p><img src="' + requestData.site_map + '" alt="Site Map">';
+          attachContainer.appendChild(mapDiv);
+        }
+
+        if (!hasAttachments) {
+          attachContainer.innerHTML = '<p style="color:#888; font-style:italic;">No attachments provided - will use generic map.</p>';
+        }
+
+        // Show form
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('edit-form').style.display = 'block';
+
+      } catch (err) {
+        showError(err.message || 'Failed to load site request data.');
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error-message').textContent = message;
+    }
+
+    function showSuccess(message, changes) {
+      document.getElementById('edit-form').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+      document.getElementById('success-message').textContent = message;
+
+      if (changes && changes.length > 0) {
+        var container = document.getElementById('changes-container');
+        var html = '<div class="changes-list" style="margin:0 20px 20px;"><strong>Changes made:</strong><ul>';
+        changes.forEach(function(c) { html += '<li>' + c + '</li>'; });
+        html += '</ul></div>';
+        container.innerHTML = html;
+      }
+    }
+
+    // Handle form submission (Approve with Changes)
+    document.getElementById('site-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      var approveBtn = document.getElementById('approve-btn');
+      approveBtn.disabled = true;
+      approveBtn.textContent = 'Approving...';
+
+      try {
+        var body = new URLSearchParams();
+        body.set('id', requestId);
+        body.set('token', token);
+        body.set('action', 'approve-modified');
+        body.set('site_name', document.getElementById('site_name').value);
+        body.set('site_description', document.getElementById('site_description').value);
+        body.set('gps_latitude', document.getElementById('gps_latitude').value);
+        body.set('gps_longitude', document.getElementById('gps_longitude').value);
+
+        var response = await fetch(EDGE_FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString()
+        });
+
+        if (!response.ok) {
+          var text = await response.text();
+          try {
+            var json = JSON.parse(text);
+            throw new Error(json.error || text);
+          } catch (ex) {
+            if (ex.message && ex.message !== text) throw ex;
+            throw new Error(text || 'Failed to approve site');
+          }
+        }
+
+        // Track changes
+        var changes = [];
+        var newName = document.getElementById('site_name').value.trim();
+        var newDesc = document.getElementById('site_description').value.trim();
+        var newLat = document.getElementById('gps_latitude').value;
+        var newLng = document.getElementById('gps_longitude').value;
+
+        if (newName !== originalData.site_name) changes.push('Name: "' + originalData.site_name + '" → "' + newName + '"');
+        if (newDesc !== originalData.site_description) changes.push('Description: Updated');
+        if (newLat !== String(originalData.gps_latitude)) changes.push('Latitude: ' + (originalData.gps_latitude || 'none') + ' → ' + newLat);
+        if (newLng !== String(originalData.gps_longitude)) changes.push('Longitude: ' + (originalData.gps_longitude || 'none') + ' → ' + newLng);
+
+        showSuccess('Site has been approved successfully! The user has been notified.', changes);
+
+      } catch (err) {
+        showError(err.message || 'Failed to approve site.');
+        approveBtn.disabled = false;
+        approveBtn.textContent = 'Approve with Changes';
+      }
+    });
+
+    // Handle reject button
+    document.getElementById('reject-btn').addEventListener('click', async function() {
+      if (!confirm('Are you sure you want to reject this site request?')) return;
+
+      var rejectBtn = document.getElementById('reject-btn');
+      rejectBtn.disabled = true;
+      rejectBtn.textContent = 'Rejecting...';
+
+      try {
+        var rejectToken = token.replace('review', 'reject');
+
+        var response = await fetch(
+          EDGE_FUNCTION_URL + '?id=' + encodeURIComponent(requestId) + '&action=reject&token=' + encodeURIComponent(rejectToken)
+        );
+
+        if (!response.ok) {
+          var text = await response.text();
+          try {
+            var json = JSON.parse(text);
+            throw new Error(json.error || text);
+          } catch (ex) {
+            if (ex.message && ex.message !== text) throw ex;
+            throw new Error(text || 'Failed to reject site');
+          }
+        }
+
+        showSuccess('Site request has been rejected. The user has been notified.', []);
+
+      } catch (err) {
+        showError(err.message || 'Failed to reject site.');
+        rejectBtn.disabled = false;
+        rejectBtn.textContent = 'Reject';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
