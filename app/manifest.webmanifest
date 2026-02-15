@@ -1,0 +1,18 @@
+{
+  "name": "WET - Wetland Monitoring",
+  "short_name": "WET",
+  "theme_color": "#2d8659",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/nature-seychelles-wet-app/app/",
+  "start_url": "/nature-seychelles-wet-app/app/",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/icon/wetapplogo1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
