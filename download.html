@@ -285,8 +285,8 @@
         </div>
         <h3>Android</h3>
         <p class="platform-label">APK Download</p>
-        <p class="version">Version 1.0.0</p>
-        <a href="#" class="download-btn disabled" id="androidBtn">Coming Soon</a>
+        <p class="version">Version 1.0.3</p>
+        <a href="#" class="download-btn" id="androidBtn">Download</a>
       </div>
 
       <!-- iOS -->
@@ -298,7 +298,7 @@
         </div>
         <h3>iOS</h3>
         <p class="platform-label">IPA Download</p>
-        <p class="version">Version 1.0.0</p>
+        <p class="version">Version 1.0.3</p>
         <a href="#" class="download-btn disabled" id="iosBtn">Coming Soon</a>
       </div>
 
@@ -378,6 +378,52 @@
       document.getElementById('passwordScreen').style.display = 'none';
       document.getElementById('downloadScreen').style.display = 'block';
     }
+
+    // Fetch version.json from Supabase and populate download links
+    async function loadVersionInfo() {
+      const SUPABASE_URL = 'https://gftrszttkztlqwwoqrzy.supabase.co';
+      try {
+        const res = await fetch(`${SUPABASE_URL}/storage/v1/object/public/app-config/version.json?t=${Date.now()}`);
+        if (!res.ok) throw new Error('Failed to fetch version info');
+        const info = await res.json();
+
+        // Android
+        const androidVersion = document.getElementById('androidVersion');
+        const androidBtn = document.getElementById('androidBtn');
+        if (info.nativeUpdate && info.nativeUpdate.android && info.nativeUpdate.android.downloadUrl) {
+          androidVersion.textContent = 'Version ' + info.latestVersion;
+          androidBtn.href = info.nativeUpdate.android.downloadUrl;
+          androidBtn.textContent = 'Download APK';
+          androidBtn.classList.remove('disabled');
+        } else {
+          androidVersion.textContent = 'Version ' + info.latestVersion;
+          androidBtn.textContent = 'No APK available';
+          androidBtn.classList.add('disabled');
+        }
+
+        // iOS
+        const iosVersion = document.getElementById('iosVersion');
+        const iosBtn = document.getElementById('iosBtn');
+        if (info.nativeUpdate && info.nativeUpdate.ios && info.nativeUpdate.ios.downloadUrl) {
+          iosVersion.textContent = 'Version ' + info.latestVersion;
+          iosBtn.href = info.nativeUpdate.ios.downloadUrl;
+          iosBtn.textContent = 'Download IPA';
+          iosBtn.classList.remove('disabled');
+        } else {
+          iosVersion.textContent = 'Version ' + info.latestVersion;
+          iosBtn.textContent = 'No IPA available';
+          iosBtn.classList.add('disabled');
+        }
+      } catch (err) {
+        console.error('Failed to load version info:', err);
+        document.getElementById('androidVersion').textContent = 'Version unavailable';
+        document.getElementById('androidBtn').textContent = 'Unavailable';
+        document.getElementById('iosVersion').textContent = 'Version unavailable';
+        document.getElementById('iosBtn').textContent = 'Unavailable';
+      }
+    }
+
+    loadVersionInfo();
   </script>
 </body>
 </html>
