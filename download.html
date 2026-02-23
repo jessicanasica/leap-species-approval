@@ -445,11 +445,11 @@
         if (info.nativeUpdate && info.nativeUpdate.android && info.nativeUpdate.android.downloadUrl) {
           androidVersion.textContent = 'Version ' + info.latestVersion;
           androidBtn.href = info.nativeUpdate.android.downloadUrl;
-          androidBtn.textContent = 'Download APK';
+          androidBtn.textContent = 'Download';
           androidBtn.classList.remove('disabled');
         } else {
           androidVersion.textContent = 'Version ' + info.latestVersion;
-          androidBtn.textContent = 'No APK available';
+          androidBtn.textContent = 'Coming Soon';
           androidBtn.classList.add('disabled');
         }
 
@@ -459,11 +459,11 @@
         if (info.nativeUpdate && info.nativeUpdate.ios && info.nativeUpdate.ios.downloadUrl) {
           iosVersion.textContent = 'Version ' + info.latestVersion;
           iosBtn.href = info.nativeUpdate.ios.downloadUrl;
-          iosBtn.textContent = 'Download IPA';
+          iosBtn.textContent = 'Download';
           iosBtn.classList.remove('disabled');
         } else {
           iosVersion.textContent = 'Version ' + info.latestVersion;
-          iosBtn.textContent = 'No IPA available';
+          iosBtn.textContent = 'Coming Soon';
           iosBtn.classList.add('disabled');
         }
       } catch (err) {
