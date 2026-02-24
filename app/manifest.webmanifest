@@ -9,7 +9,7 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/icon/wetapplogo1.png",
+      "src": "assets/wetapplogo2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
