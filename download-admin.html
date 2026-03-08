@@ -319,7 +319,7 @@
         </div>
         <h3>Android</h3>
         <p class="platform-label">APK Download</p>
-        <p class="version" id="androidVersion">Version 1.0.19</p>
+        <p class="version" id="androidVersion">Version 1.0.20</p>
         <a href="#" class="download-btn" id="androidBtn">Download APK</a>
       </div>
 
@@ -332,7 +332,7 @@
         </div>
         <h3>iOS</h3>
         <p class="platform-label">IPA Download</p>
-        <p class="version" id="iosVersion">Version 1.0.19</p>
+        <p class="version" id="iosVersion">Version 1.0.20</p>
         <a href="#" class="download-btn" id="iosBtn">Download IPA</a>
       </div>
 
@@ -345,7 +345,7 @@
         </div>
         <h3>Desktop</h3>
         <p class="platform-label">Windows / macOS / Linux</p>
-        <p class="version">Version 1.0.19</p>
+        <p class="version">Version 1.0.20</p>
         <a href="#" class="download-btn" id="desktopBtn" onclick="promptDesktopPassword(event)">Open Web App</a>
         <p style="font-size: 12px; color: #86868b; margin-top: 12px;">Open in Chrome or Edge, then click the install icon (⊕) in the address bar to install as a desktop app.</p>
       </div>
@@ -370,11 +370,11 @@
     <div class="install-instructions">
       <h4>🍎 How to install on iOS</h4>
       <ol>
-        <li>Tap <strong>Download</strong> above — iOS will prompt you to install the app.</li>
-        <li>Tap <strong>Install</strong> when prompted by iOS.</li>
-        <li>Wait for the installation to complete.</li>
-        <li>Find WETSAPP on your Home Screen and tap to open!</li>
-        <li>If you see "Untrusted Developer", go to <strong>Settings → General → VPN & Device Management</strong> and trust "Jessica Nasica".</li>
+        <li>Tap <strong>Download</strong> above — a popup will ask <em>"would you like to install WETSAPP?"</em>.</li>
+        <li>Tap <strong>Install</strong> when prompted.</li>
+        <li>Wait for the app icon to appear on your Home Screen (it may show a loading indicator).</li>
+        <li>If you see <strong>"Untrusted Enterprise Developer"</strong> when opening the app, go to <strong>Settings → General → VPN & Device Management</strong>, tap the developer profile, and tap <strong>Trust</strong>.</li>
+        <li>Open WETSAPP from your Home Screen!</li>
       </ol>
       <div class="safe-note">
         ✅ <strong>This is safe.</strong> WETSAPP is developed by Nature Seychelles and signed with an official Apple Developer certificate. You may need to trust the developer the first time you install.
@@ -467,9 +467,9 @@
         const iosBtn = document.getElementById('iosBtn');
         if (info.nativeUpdate && info.nativeUpdate.ios && info.nativeUpdate.ios.downloadUrl) {
           iosVersion.textContent = 'Version ' + info.latestVersion;
-          // Use iOS manifest URL for proper installation
-          const manifestUrl = info.nativeUpdate.ios.downloadUrl.replace('.ipa', '.plist');
-          iosBtn.href = `itms-services://?action=download-manifest&url=${manifestUrl}`;
+          // Use manifest.plist hosted on GitHub Pages for OTA install
+          const manifestUrl = 'https://jessicanasica.github.io/nature-seychelles-wet-app/manifest.plist';
+          iosBtn.href = `itms-services://?action=download-manifest&url=${encodeURIComponent(manifestUrl)}`;
           iosBtn.textContent = 'Download IPA';
           iosBtn.classList.remove('disabled');
         } else {
