@@ -374,14 +374,13 @@
     <div class="install-instructions">
       <h4>🍎 How to install on iOS</h4>
       <ol>
-        <li>Tap <strong>Download</strong> above — a popup will ask <em>"would you like to install WETSAPP?"</em>.</li>
-        <li>Tap <strong>Install</strong> when prompted.</li>
-        <li>Wait for the app icon to appear on your Home Screen (it may show a loading indicator).</li>
-        <li>If you see <strong>"Untrusted Enterprise Developer"</strong> when opening the app, go to <strong>Settings → General → VPN & Device Management</strong>, tap the developer profile, and tap <strong>Trust</strong>.</li>
+        <li>Tap <strong>Get on App Store</strong> above — you will be redirected to the App Store.</li>
+        <li>Tap <strong>Get</strong> and confirm with Face ID, Touch ID, or your Apple ID password.</li>
+        <li>Wait for the app to download and install.</li>
         <li>Open WETSAPP from your Home Screen!</li>
       </ol>
       <div class="safe-note">
-        ✅ <strong>This is safe.</strong> WETSAPP is developed by Nature Seychelles and signed with an official Apple Developer certificate. You may need to trust the developer the first time you install.
+        ✅ WETSAPP is an official App Store app developed by Nature Seychelles. Updates are delivered automatically through the App Store.
       </div>
     </div>
 
@@ -468,15 +467,15 @@
           androidBtn.classList.add('disabled');
         }
 
-        // iOS
+        // iOS — App Store (unlisted)
         const iosVersion = document.getElementById('iosVersion');
         const iosBtn = document.getElementById('iosBtn');
-        if (info.nativeUpdate && info.nativeUpdate.ios && info.nativeUpdate.ios.downloadUrl) {
+        // TODO: Replace with actual App Store URL after approval
+        const APP_STORE_URL = info.nativeUpdate?.ios?.appStoreUrl || 'https://apps.apple.com/app/wetsapp/id000000000';
+        if (info.nativeUpdate && info.nativeUpdate.ios) {
           iosVersion.textContent = 'Version ' + info.latestVersion;
-          // Use manifest.plist hosted on GitHub Pages for OTA install
-          const manifestUrl = 'https://jessicanasica.github.io/nature-seychelles-wet-app/manifest.plist';
-          iosBtn.href = `itms-services://?action=download-manifest&url=${encodeURIComponent(manifestUrl)}`;
-          iosBtn.textContent = 'Download';
+          iosBtn.href = APP_STORE_URL;
+          iosBtn.textContent = 'Get on App Store';
           iosBtn.classList.remove('disabled');
         } else {
           iosVersion.textContent = 'Version ' + info.latestVersion;
