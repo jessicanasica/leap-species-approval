@@ -1,6 +1,6 @@
 {
   "name": "leap-wetland-monitoring",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -49,8 +49,10 @@
     "capacitor-app-settings": "^7.0.0",
     "crypto-js": "^4.2.0",
     "echarts": "^6.0.0",
+    "html2canvas": "^1.4.1",
     "ionicons": "^7.0.0",
     "jspdf": "^4.0.0",
+    "marked": "^18.0.0",
     "ngx-echarts": "^17.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
